@@ -48,10 +48,10 @@ int OnInit()
    PlotIndexSetDouble(0,PLOT_EMPTY_VALUE,0.0);
    PlotIndexSetDouble(1,PLOT_EMPTY_VALUE,0.0);
 
-   hCyclePeriod=iCustom(NULL,0,"CyclePeriod",InpAlpha);
-   if(hCyclePeriod==INVALID_HANDLE)
+   hCyclePeriod=iCustom(NULL,0,"CyclePeriod",InpAlpha,0,0);   
+   if(GetLastError()!=ERR_NO_ERROR)
      {
-      Print("CyclePeriod indicator not available!");
+      Alert("CyclePeriod indicator not available! " + _LastError);
       return(-1);
      }
    return(0);
@@ -79,7 +79,7 @@ int OnCalculate(const int rates_total,
    int ticks=CopyTickVolume(Symbol(), 0, 0, 1, tickCnt);
    if(ticks!=1) return(rates_total);
    double CyclePeriod[1],alpha1;
-
+   
    Comment(tickCnt[0]);
 
    if(prev_calculated==0 || tickCnt[0]==1)
@@ -98,12 +98,12 @@ int OnCalculate(const int rates_total,
 
       for(i=nLimit;i>=0 && !IsStopped();i--)
         {
-         Smooth[i]=(Price(i)+2*Price(i+1)+2*Price(i+2)+Price(i+3))/6.0;
-         int copied=CopyBuffer(hCyclePeriod,0,i,1,CyclePeriod);
-
-         if(copied<=0)
+         Smooth[i]=(Price(i)+2*Price(i+1)+2*Price(i+2)+Price(i+3))/6.0;         
+         CyclePeriod[0]=iCustom(NULL,0,"CyclePeriod",InpAlpha,0,0);
+         
+         if(GetLastError()!=ERR_NO_ERROR)
            {
-            Print("FAILURE: Could not get values from CyclePeriod indicator.");
+            Alert("FAILURE: Could not get values from CyclePeriod indicator. " + _LastError);
             return -1;
            }
          alpha1 = 2.0/(CyclePeriod[0]+1.0);
