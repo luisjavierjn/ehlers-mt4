@@ -1,1 +1,1 @@
-# ehlers-mt4
+# John Ehlers Indicators for MT4
