@@ -84,6 +84,7 @@ int OnCalculate(const int rates_total,
 
       ArrayResize(Smooth,Bars(_Symbol,_Period));
       ArrayResize(Cycle,Bars(_Symbol,_Period));
+      ArrayResize(Trigger,Bars(_Symbol,_Period));
       
       if(nLimit>rates_total-4) // adjust for last bars
          nLimit=rates_total-4;

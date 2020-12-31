@@ -12,14 +12,21 @@
 #property description "CyclePeriod indicator - described by John F. Ehlers"
 #property description "in \"Cybernetic Analysis for Stocks and Futures\""
 
-#property indicator_buffers 1
-#property indicator_plots 1
+#property indicator_buffers 2
+#property indicator_plots 2
 #property indicator_width1 1
+#property indicator_width2 1
 #property indicator_type1   DRAW_LINE
-#property indicator_color1  White
+#property indicator_type2   DRAW_LINE
+#property indicator_color1  Yellow
+#property indicator_color2  Blue
 #property indicator_label1  "Smooth"
+#property indicator_label2  "Trigger"
 
 double Smooth[];
+double Trigger[];
+
+int drawBegin = 8;
 
 input double InpAlpha=0.07; // alpha
 
@@ -30,9 +37,17 @@ int OnInit()
   {
 //--- indicator buffers mapping
    ArraySetAsSeries(Smooth,true);
+   ArraySetAsSeries(Trigger,true);
+   
    SetIndexBuffer(0,Smooth,INDICATOR_DATA);
+   SetIndexBuffer(1,Trigger,INDICATOR_DATA);
+   
+   SetIndexDrawBegin(0, drawBegin);
+   SetIndexDrawBegin(1, drawBegin);
+   
    PlotIndexSetDouble(0,PLOT_EMPTY_VALUE,0.0);
-   return(0);   
+   PlotIndexSetDouble(1,PLOT_EMPTY_VALUE,0.0);
+   
 //---
    return(INIT_SUCCEEDED);
   }
@@ -65,12 +80,17 @@ int OnCalculate(const int rates_total,
       int nLimit=rates_total-prev_calculated-1; // start index for calculations
 
       ArrayResize(Smooth,Bars(_Symbol,_Period));
+      ArrayResize(Trigger,Bars(_Symbol,_Period));
+      
+      //if(nLimit>rates_total-2) // adjust for last bars
+      //   nLimit=rates_total-2;      
       
       for(i=nLimit;i>=0 && !IsStopped();i--) 
       {
          itrend=iCustom(NULL,0,"InstantaneousTrendline",InpAlpha,0,i);
          ccycle=iCustom(NULL,0,"CyberCycle",InpAlpha,0,i);
          Smooth[i]=itrend+ccycle;
+         Trigger[i]=itrend;
       }
      } 
 //--- return value of prev_calculated for next call
