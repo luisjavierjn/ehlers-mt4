@@ -100,7 +100,7 @@ int OnCalculate(const int rates_total,
       for(i=nLimit;i>=0 && !IsStopped();i--)
         {
          Smooth[i]=(Price(i)+2*Price(i+1)+2*Price(i+2)+Price(i+3))/6.0;         
-         CyclePeriod[0]=iCustom(NULL,0,"CyclePeriod",InpAlpha,0,0);
+         CyclePeriod[0]=iCustom(NULL,0,"CyclePeriod",InpAlpha,0,i);
          
          if(GetLastError()!=ERR_NO_ERROR)
            {
