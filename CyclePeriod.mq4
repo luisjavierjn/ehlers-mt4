@@ -86,6 +86,7 @@ int OnCalculate(const int rates_total,
       int nLimit=rates_total-prev_calculated-1; // start index for calculations
 
       ArraySetAsSeries(high,true);
+      ArraySetAsSeries(close,true);
       ArraySetAsSeries(low,true);
       
       ArrayResize(Smooth,Bars(_Symbol,_Period));
