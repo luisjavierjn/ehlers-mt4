@@ -20,13 +20,13 @@
 #property indicator_type2   DRAW_LINE
 #property indicator_color1  Yellow
 #property indicator_color2  Blue
-#property indicator_label1  "Smooth"
-#property indicator_label2  "Trigger"
+#property indicator_label1  "ITrend+CyberCycle"
+#property indicator_label2  "ITrend"
 
 double Smooth[];
-double Trigger[];
+double ITrend[];
 
-int drawBegin = 8;
+int drawBegin = 4;
 
 input double InpAlpha=0.07; // alpha
 
@@ -37,10 +37,10 @@ int OnInit()
   {
 //--- indicator buffers mapping
    ArraySetAsSeries(Smooth,true);
-   ArraySetAsSeries(Trigger,true);
+   ArraySetAsSeries(ITrend,true);
    
    SetIndexBuffer(0,Smooth,INDICATOR_DATA);
-   SetIndexBuffer(1,Trigger,INDICATOR_DATA);
+   SetIndexBuffer(1,ITrend,INDICATOR_DATA);
    
    SetIndexDrawBegin(0, drawBegin);
    SetIndexDrawBegin(1, drawBegin);
@@ -80,17 +80,14 @@ int OnCalculate(const int rates_total,
       int nLimit=rates_total-prev_calculated-1; // start index for calculations
 
       ArrayResize(Smooth,Bars(_Symbol,_Period));
-      ArrayResize(Trigger,Bars(_Symbol,_Period));
-      
-      //if(nLimit>rates_total-2) // adjust for last bars
-      //   nLimit=rates_total-2;      
+      ArrayResize(ITrend,Bars(_Symbol,_Period));
       
       for(i=nLimit;i>=0 && !IsStopped();i--) 
       {
          itrend=iCustom(NULL,0,"InstantaneousTrendline",InpAlpha,0,i);
          ccycle=iCustom(NULL,0,"CyberCycle",InpAlpha,0,i);
          Smooth[i]=itrend+ccycle;
-         Trigger[i]=itrend;
+         ITrend[i]=itrend;
       }
      } 
 //--- return value of prev_calculated for next call
