@@ -15,14 +15,14 @@
 #property indicator_color1  Green
 #property indicator_color2  Red
 
-#define Price(k) ((high[k+1]+close[k+1]+low[k+1])/3.0)
+#define Price(k) ((high[k]+close[k]+low[k])/3.0)
 
 double Smooth[];
 double Cycle[];
 double Trigger[];
 
 int currentbar = 0;
-int n = 5;
+int n = 4;
 int buffers = 0;
 int drawBegin = 8;
 
