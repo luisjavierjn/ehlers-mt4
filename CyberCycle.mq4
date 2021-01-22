@@ -66,10 +66,6 @@ int OnCalculate(const int rates_total,
       ArraySetAsSeries(high,true);
       ArraySetAsSeries(close,true);
       ArraySetAsSeries(low,true);
-   
-      ArrayResize(Cycle,Bars(_Symbol,_Period));
-      ArrayResize(Trigger,Bars(_Symbol,_Period));
-      ArrayResize(Smooth,Bars(_Symbol,_Period));   
    }
    
    for(int i=limit;i>=0;i--) {
