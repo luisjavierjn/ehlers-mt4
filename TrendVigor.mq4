@@ -27,7 +27,7 @@ double i1 = 0;
 int currentbar = 0;
 int n = 70;
 int buffers = 0;
-int drawBegin = 0;
+int drawBegin = 70;
 
 input double InpAlpha=0.07; // alpha
 

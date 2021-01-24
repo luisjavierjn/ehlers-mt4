@@ -1,23 +1,44 @@
 //+------------------------------------------------------------------+
 //|                                                    Amplitude.mq4 |
-//|                        Copyright 2020, MetaQuotes Software Corp. |
-//|                                             https://www.mql5.com |
+//|                                     Copyright 2021, luisjavierjn |
+//|                                               https://caudas.com |
 //+------------------------------------------------------------------+
-#property copyright "Copyright 2020, MetaQuotes Software Corp."
-#property link      "https://www.mql5.com"
+#property copyright "Copyright 2021, MetaQuotes Software Corp."
+#property link      "https://www.mql4.com"
 #property version   "1.00"
 #property strict
-#property indicator_chart_window
+
+#property description "Amplitude indicator - described by John F. Ehlers"
+
+#property indicator_separate_window
+#property indicator_buffers 2
+#property indicator_color1  Red
+#property indicator_color2  Blue
+
+double Amplitude[];
+double AmplitudeAvg[];
+
+int period = 0;
+double q1 = 0;
+double i1 = 0;
+double ampl = 0;
+int buffers = 0;
+int drawBegin = 0;
+
+input double InpAlpha=0.07; // alpha
+
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |
 //+------------------------------------------------------------------+
-int OnInit()
-  {
-//--- indicator buffers mapping
-   
-//---
+int OnInit() {
+//--- indicator buffers mapping 
+   initBuffer(Amplitude, "Amplitude", DRAW_LINE);
+   initBuffer(AmplitudeAvg);//, "AmplitudeAvg", DRAW_LINE);
+
+//--- return value
    return(INIT_SUCCEEDED);
-  }
+}
+
 //+------------------------------------------------------------------+
 //| Custom indicator iteration function                              |
 //+------------------------------------------------------------------+
@@ -30,11 +51,32 @@ int OnCalculate(const int rates_total,
                 const double &close[],
                 const long &tick_volume[],
                 const long &volume[],
-                const int &spread[])
-  {
+                const int &spread[]) {
 //---
+   //--- last counted bar will be recounted
+   int limit=rates_total-prev_calculated-1; // start index for calculations
+   
+   for(int i=limit;i>=0;i--) {
+      period=(int)iCustom(NULL,0,"Cycle_Period",InpAlpha,0,i);
+      q1=iCustom(NULL,0,"Cycle_Period",InpAlpha,4,i);
+      i1=iCustom(NULL,0,"Cycle_Period",InpAlpha,5,i);      
+      Amplitude[i] = MathSqrt(MathPow(q1,2)+MathPow(i1,2));
+      AmplitudeAvg[i] = iMAOnArray(Amplitude,0,period,0,MODE_SMA,0);
+   }
    
 //--- return value of prev_calculated for next call
    return(rates_total);
-  }
+}
 //+------------------------------------------------------------------+
+
+void initBuffer(double &array[], string label = "", int type = DRAW_NONE, int arrow = 0, int style = EMPTY, int width = EMPTY) {
+    ArraySetAsSeries(array,true); 
+    SetIndexBuffer(buffers, array);
+    SetIndexLabel(buffers, label);
+    SetIndexEmptyValue(buffers, EMPTY_VALUE);
+    SetIndexDrawBegin(buffers, drawBegin);
+    SetIndexShift(buffers, 0);
+    SetIndexStyle(buffers, type, style, width);
+    SetIndexArrow(buffers, arrow);
+    buffers++;
+}
