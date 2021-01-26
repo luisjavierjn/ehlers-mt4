@@ -16,7 +16,7 @@
 #property indicator_color2  Blue
 
 double Amplitude[];
-double AmplitudeAvg[];
+double AmplitudeMA[];
 
 int period = 0;
 double q1 = 0;
@@ -33,7 +33,7 @@ input double InpAlpha=0.07; // alpha
 int OnInit() {
 //--- indicator buffers mapping 
    initBuffer(Amplitude, "Amplitude", DRAW_LINE);
-   initBuffer(AmplitudeAvg);//, "AmplitudeAvg", DRAW_LINE);
+   initBuffer(AmplitudeMA, "AmplitudeMA", DRAW_LINE);
 
 //--- return value
    return(INIT_SUCCEEDED);
@@ -57,11 +57,11 @@ int OnCalculate(const int rates_total,
    int limit=rates_total-prev_calculated-1; // start index for calculations
    
    for(int i=limit;i>=0;i--) {
-      period=(int)iCustom(NULL,0,"Cycle_Period",InpAlpha,0,i);
-      q1=iCustom(NULL,0,"Cycle_Period",InpAlpha,4,i);
-      i1=iCustom(NULL,0,"Cycle_Period",InpAlpha,5,i);      
+      period=(int)iCustom(NULL,0,"CyclePeriod",InpAlpha,0,i);
+      q1=iCustom(NULL,0,"CyclePeriod",InpAlpha,4,i);
+      i1=iCustom(NULL,0,"CyclePeriod",InpAlpha,5,i);      
       Amplitude[i] = MathSqrt(MathPow(q1,2)+MathPow(i1,2));
-      AmplitudeAvg[i] = iMAOnArray(Amplitude,0,period,0,MODE_SMA,0);
+      AmplitudeMA[i] = iMAOnArray(Amplitude,0,period,0,MODE_SMA,i);
    }
    
 //--- return value of prev_calculated for next call

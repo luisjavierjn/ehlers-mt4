@@ -71,9 +71,9 @@ int OnCalculate(const int rates_total,
    for(int i=limit;i>=0;i--) {
       if(++currentbar<70) continue;
    
-      period=(int)iCustom(NULL,0,"Cycle_Period",InpAlpha,0,i);
-      q1=iCustom(NULL,0,"Cycle_Period",InpAlpha,4,i);
-      i1=iCustom(NULL,0,"Cycle_Period",InpAlpha,5,i);
+      period=(int)iCustom(NULL,0,"CyclePeriod",InpAlpha,0,i);
+      q1=iCustom(NULL,0,"CyclePeriod",InpAlpha,4,i);
+      i1=iCustom(NULL,0,"CyclePeriod",InpAlpha,5,i);
       
       Amplitude = MathSqrt(MathPow(q1,2)+MathPow(i1,2));
       PriceA=iCustom(NULL,0,"InstantaneousTrendline",InpAlpha,0,i);
