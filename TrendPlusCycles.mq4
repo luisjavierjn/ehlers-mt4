@@ -31,8 +31,9 @@ input double InpAlpha=0.07; // alpha
 //+------------------------------------------------------------------+
 int OnInit() {
 //--- indicator buffers mapping 
+   IndicatorBuffers(2);
    initBuffer(Smooth, "Smooth", DRAW_LINE);
-   initBuffer(ITrend, "ITrend", DRAW_LINE);
+   initBuffer(ITrend, "ITrend", DRAW_LINE);   
 
 //--- return value
    return(INIT_SUCCEEDED);
@@ -53,9 +54,10 @@ int OnCalculate(const int rates_total,
                 const int &spread[]) {
 //---
    //--- last counted bar will be recounted
-   int limit=rates_total-prev_calculated-1; // start index for calculations
+   int limit=rates_total-prev_calculated; // start index for calculations
+   if(prev_calculated>0) limit++;
    
-   for(int i=limit;i>=0;i--) {
+   for(int i=limit-1;i>=0;i--) {
       itrend=iCustom(NULL,0,"InstantaneousTrendline",InpAlpha,0,i);
       ccycle=iCustom(NULL,0,"CyberCycle",InpAlpha,0,i);
       Smooth[i]=itrend+ccycle;

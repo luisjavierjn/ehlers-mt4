@@ -18,10 +18,10 @@
 double Amplitude[];
 double AmplitudeMA[];
 
-int period = 0;
+int cp = 0;
 double q1 = 0;
 double i1 = 0;
-double ampl = 0;
+int n = 1;
 int buffers = 0;
 int drawBegin = 0;
 
@@ -31,9 +31,10 @@ input double InpAlpha=0.07; // alpha
 //| Custom indicator initialization function                         |
 //+------------------------------------------------------------------+
 int OnInit() {
-//--- indicator buffers mapping 
-   initBuffer(Amplitude, "Amplitude", DRAW_LINE);
-   initBuffer(AmplitudeMA, "AmplitudeMA", DRAW_LINE);
+//--- indicator buffers mapping
+   IndicatorBuffers(2);
+   initBuffer(AmplitudeMA, "AmplitudeMA", DRAW_LINE);   
+   initBuffer(Amplitude, "Amplitude", DRAW_LINE);   
 
 //--- return value
    return(INIT_SUCCEEDED);
@@ -54,14 +55,21 @@ int OnCalculate(const int rates_total,
                 const int &spread[]) {
 //---
    //--- last counted bar will be recounted
-   int limit=rates_total-prev_calculated-1; // start index for calculations
+   int limit=rates_total-prev_calculated; // start index for calculations
+   if(prev_calculated>0) limit++;
    
+   if(limit>rates_total-n) // adjust for last bars
+      limit=rates_total-n;
+   else limit--;
+      
    for(int i=limit;i>=0;i--) {
-      period=(int)iCustom(NULL,0,"CyclePeriod",InpAlpha,0,i);
+      cp=(int)iCustom(NULL,0,"CyclePeriod",InpAlpha,0,i);
       q1=iCustom(NULL,0,"CyclePeriod",InpAlpha,4,i);
-      i1=iCustom(NULL,0,"CyclePeriod",InpAlpha,5,i);      
+      i1=iCustom(NULL,0,"CyclePeriod",InpAlpha,5,i);         
       Amplitude[i] = MathSqrt(MathPow(q1,2)+MathPow(i1,2));
-      AmplitudeMA[i] = iMAOnArray(Amplitude,0,period,0,MODE_SMA,i);
+      int period=(rates_total-n-i)<cp ? (rates_total-n-i) : cp;
+      if(period>0)
+         AmplitudeMA[i] = average(Amplitude,i,period);
    }
    
 //--- return value of prev_calculated for next call
@@ -79,4 +87,12 @@ void initBuffer(double &array[], string label = "", int type = DRAW_NONE, int ar
     SetIndexStyle(buffers, type, style, width);
     SetIndexArrow(buffers, arrow);
     buffers++;
+}
+
+double average(double& arr[], int idx, double len) {
+   ArraySetAsSeries(arr, true);
+   double ArraySum = 0;
+   for(int ArrayIndex = idx; ArrayIndex < (idx+len); ArrayIndex++)
+      ArraySum += arr[ArrayIndex];
+   return (ArraySum/len); 
 }

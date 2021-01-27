@@ -25,9 +25,9 @@ int period = 0;
 double q1 = 0;
 double i1 = 0;
 int currentbar = 0;
-int n = 70;
+int n = 65;
 int buffers = 0;
-int drawBegin = 70;
+int drawBegin = 0;
 
 input double InpAlpha=0.07; // alpha
 
@@ -35,10 +35,11 @@ input double InpAlpha=0.07; // alpha
 //| Custom indicator initialization function                         |
 //+------------------------------------------------------------------+
 int OnInit() {
-//--- indicator buffers mapping 
+//--- indicator buffers mapping
+   IndicatorBuffers(3);
    initBuffer(TVigor, "TrendVigor", DRAW_LINE);
    initBuffer(Sup, "Sup", DRAW_LINE);
-   initBuffer(Inf, "Inf", DRAW_LINE);
+   initBuffer(Inf, "Inf", DRAW_LINE);   
 
 //--- return value
    return(INIT_SUCCEEDED);
@@ -60,17 +61,17 @@ int OnCalculate(const int rates_total,
 //---
    double Amplitude, Slope, PriceA, PriceB;
    //--- last counted bar will be recounted
-   int limit=rates_total-prev_calculated-1; // start index for calculations
+   int limit=rates_total-prev_calculated; // start index for calculations
+   if(prev_calculated>0) limit++;
    
    if(limit>rates_total-n) // adjust for last bars
-      limit=rates_total-n;   
+      limit=rates_total-n;
+   else limit--; 
    
    if(limit>=0)
       ArraySetAsSeries(close,true);
    
    for(int i=limit;i>=0;i--) {
-      if(++currentbar<70) continue;
-   
       period=(int)iCustom(NULL,0,"CyclePeriod",InpAlpha,0,i);
       q1=iCustom(NULL,0,"CyclePeriod",InpAlpha,4,i);
       i1=iCustom(NULL,0,"CyclePeriod",InpAlpha,5,i);

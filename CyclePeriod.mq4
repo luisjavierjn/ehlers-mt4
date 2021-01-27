@@ -11,7 +11,7 @@
 #property description "in \"Cybernetic Analysis for Stocks and Futures\""
 
 #property indicator_separate_window
-#property indicator_buffers 8
+#property indicator_buffers 2
 #property indicator_color1  Green
 #property indicator_color2  Red
 
@@ -37,6 +37,7 @@ input double InpAlpha=0.07; // alpha
 //+------------------------------------------------------------------+
 int OnInit() {
 //--- indicator buffers mapping 
+   IndicatorBuffers(8);
    initBuffer(CyclePeriod, "CyclePeriod", DRAW_LINE);
    initBuffer(Trigger, "Trigger", DRAW_LINE);
    initBuffer(Smooth);
@@ -44,7 +45,7 @@ int OnInit() {
    initBuffer(Q1);
    initBuffer(I1);
    initBuffer(DeltaPhase);
-   initBuffer(InstPeriod);
+   initBuffer(InstPeriod);   
 
 //--- return value
    return(0);
@@ -66,10 +67,12 @@ int OnCalculate(const int rates_total,
 //---   
    double DC, MedianDelta;
    //--- last counted bar will be recounted
-   int limit=rates_total-prev_calculated-1; // start index for calculations   
+   int limit=rates_total-prev_calculated; // start index for calculations   
+   if(prev_calculated>0) limit++;
    
    if(limit>rates_total-n) // adjust for last bars
-      limit=rates_total-n;         
+      limit=rates_total-n;
+   else limit--;        
 
    if(limit>=0) {
       ArraySetAsSeries(high,true);

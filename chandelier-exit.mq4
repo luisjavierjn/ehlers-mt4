@@ -16,8 +16,7 @@
 
 
 //---- input parameters
-extern int       Shift=0;
-extern double    ATRMultipl=3.5;
+extern double    ATRMultipl=3;
 extern double    InpAlpha=0.07; // alpha
 //---- buffers
 double ExtMapBuffer1[];
@@ -27,7 +26,7 @@ double ExtMapBuffer4[];
 double direction[];
 double ATRvalue;
 double CPeriod;
-double AmplAvg;
+double Amplitude;
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |
 //+------------------------------------------------------------------+
@@ -92,12 +91,12 @@ int start()
    {
          ExtMapBuffer1[i]= EMPTY_VALUE;   ExtMapBuffer2[i]= EMPTY_VALUE;
 
-         CPeriod=(int)iCustom(NULL,0,"Cycle_Period",InpAlpha,0,i);
-         AmplAvg=iCustom(NULL,0,"AmplitudeAvg",InpAlpha,1,i);         
-         ATRvalue=iATR(NULL,0,CPeriod,i+Shift);                          
+         CPeriod=(int)iCustom(NULL,0,"CyclePeriod",InpAlpha,0,i);
+         Amplitude=iCustom(NULL,0,"AmplitudeMA",InpAlpha,0,i);         
+         ATRvalue=iATR(NULL,0,CPeriod,i)*ATRMultipl;                          
          
-         ExtMapBuffer1[i]=High[Highest(NULL,0,MODE_HIGH,CPeriod,i+Shift)] -(2*AmplAvg+ATRvalue);
-         ExtMapBuffer2[i]=Low[Lowest(NULL,0,MODE_LOW,CPeriod,i+Shift)]    +(2*AmplAvg+ATRvalue);
+         ExtMapBuffer1[i]=High[Highest(NULL,0,MODE_HIGH,CPeriod,i)] - ATRvalue;
+         ExtMapBuffer2[i]=Low[Lowest(NULL,0,MODE_LOW,CPeriod,i)]    + ATRvalue;
          
          ExtMapBuffer3[i]= EMPTY_VALUE;   ExtMapBuffer4[i]= EMPTY_VALUE;
 
