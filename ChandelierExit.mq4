@@ -11,9 +11,6 @@
 #property indicator_buffers 2
 #property indicator_color1 Orange
 #property indicator_color2 Magenta
-//#property indicator_color3 Blue
-//#property indicator_color4 Red
-
 
 //---- input parameters
 extern double    ATRMultipl=3;
@@ -48,19 +45,9 @@ int init()
    SetIndexBuffer(3,ExtMapBuffer2);
    SetIndexBuffer(4,direction);
 
-
-   //SetIndexStyle(2,DRAW_LINE);
-   //SetIndexStyle(3,DRAW_LINE);
-   //SetIndexEmptyValue(2,0.0);
-   //SetIndexEmptyValue(3,0.0);
-
-   //string shortnme;
-   //shortnme = "("+Range+",ATR("+ATRPeriod+","+DoubleToStr(ATRMultipl,2)+") ";
-   
    IndicatorShortName("Chandelier Exit");//+shortnme);  
    SetIndexLabel(0, "Chandlr ");//+shortnme);
    SetIndexLabel(1, "Chandlr ");//+shortnme);
-
 
 //----
    return(0);
@@ -92,7 +79,6 @@ int start()
          ExtMapBuffer1[i]= EMPTY_VALUE;   ExtMapBuffer2[i]= EMPTY_VALUE;
 
          CPeriod=(int)iCustom(NULL,0,"CyclePeriod",InpAlpha,0,i);
-         Amplitude=iCustom(NULL,0,"AmplitudeMA",InpAlpha,0,i);         
          ATRvalue=iATR(NULL,0,CPeriod,i)*ATRMultipl;                          
          
          ExtMapBuffer1[i]=High[Highest(NULL,0,MODE_HIGH,CPeriod,i)] - ATRvalue;
