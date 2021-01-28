@@ -27,7 +27,7 @@ double InstPeriod[];
 double CyclePeriod[];
 
 int currentbar = 0;
-int n = 7;
+int n = 4;
 int buffers = 0;
 int drawBegin = 0;
 
@@ -86,8 +86,10 @@ int OnCalculate(const int rates_total,
       Cycle[i]=(1.0-0.5*InpAlpha)*(1.0-0.5*InpAlpha)*(Smooth[i]-2.0*Smooth[i+1]+Smooth[i+2])
                +2.0*(1.0-InpAlpha)*Cycle[i+1]-(1.0-InpAlpha)*(1.0-InpAlpha)*Cycle[i+2];
 
-      if(++currentbar<7)
+      if(++currentbar<7) {
          Cycle[i]=(Price(i)-2.0*Price(i+1)+Price(i+2))/4.0;
+         continue;
+      }
          
       Q1[i] = (0.0962*Cycle[i]+0.5769*Cycle[i+2]-0.5769*Cycle[i+4]-0.0962*Cycle[i+6])*(0.5+0.08*InstPeriod[i+1]);
       I1[i] = Cycle[i+3];
