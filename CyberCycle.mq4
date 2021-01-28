@@ -24,7 +24,7 @@ double Trigger[];
 int currentbar = 0;
 int n = 4;
 int buffers = 0;
-int drawBegin = 8;
+int drawBegin = 0;
 
 input double InpAlpha=0.07; // alpha
 //+------------------------------------------------------------------+

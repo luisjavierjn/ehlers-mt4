@@ -29,7 +29,7 @@ double CyclePeriod[];
 int currentbar = 0;
 int n = 7;
 int buffers = 0;
-int drawBegin = 8;
+int drawBegin = 0;
 
 input double InpAlpha=0.07; // alpha
 //+------------------------------------------------------------------+
