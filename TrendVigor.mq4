@@ -21,11 +21,9 @@ double TVigor[];
 double Sup[];
 double Inf[];
 
-int period = 0;
+int cp = 0;
 double q1 = 0;
 double i1 = 0;
-int currentbar = 0;
-int n = 65;
 int buffers = 0;
 int drawBegin = 0;
 
@@ -59,26 +57,20 @@ int OnCalculate(const int rates_total,
                 const long &volume[],
                 const int &spread[]) {
 //---
-   double Amplitude, Slope, PriceA, PriceB;
+   double Amplitude, Slope, CPeriod, PriceA, PriceB;
    //--- last counted bar will be recounted
    int limit=rates_total-prev_calculated; // start index for calculations
    if(prev_calculated>0) limit++;
    
-   if(limit>rates_total-n) // adjust for last bars
-      limit=rates_total-n;
-   else limit--; 
-   
-   if(limit>=0)
-      ArraySetAsSeries(close,true);
-   
-   for(int i=limit;i>=0;i--) {
-      period=(int)iCustom(NULL,0,"CyclePeriod",InpAlpha,0,i);
+   for(int i=limit-1;i>=0;i--) {
+      cp=(int)iCustom(NULL,0,"CyclePeriod",InpAlpha,0,i);
       q1=iCustom(NULL,0,"CyclePeriod",InpAlpha,4,i);
       i1=iCustom(NULL,0,"CyclePeriod",InpAlpha,5,i);
       
       Amplitude = MathSqrt(MathPow(q1,2)+MathPow(i1,2));
       PriceA=iCustom(NULL,0,"InstantaneousTrendline",InpAlpha,0,i);
-      PriceB=iCustom(NULL,0,"InstantaneousTrendline",InpAlpha,0,i+period);
+      CPeriod=(rates_total-1-i)<cp ? (rates_total-1-i) : cp;
+      PriceB=iCustom(NULL,0,"InstantaneousTrendline",InpAlpha,0,i+CPeriod);
       Slope = PriceA-PriceB;
       
       TVigor[i]=MathMax(MathMin(Slope/Amplitude,2),-2);

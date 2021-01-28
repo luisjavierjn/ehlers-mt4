@@ -58,18 +58,14 @@ int OnCalculate(const int rates_total,
    int limit=rates_total-prev_calculated; // start index for calculations
    if(prev_calculated>0) limit++;
    
-   if(limit>rates_total-n) // adjust for last bars
-      limit=rates_total-n;
-   else limit--;
-      
-   for(int i=limit;i>=0;i--) {
+   for(int i=limit-1;i>=0;i--) {
       cp=(int)iCustom(NULL,0,"CyclePeriod",InpAlpha,0,i);
       q1=iCustom(NULL,0,"CyclePeriod",InpAlpha,4,i);
       i1=iCustom(NULL,0,"CyclePeriod",InpAlpha,5,i);         
       Amplitude[i] = MathSqrt(MathPow(q1,2)+MathPow(i1,2));
-      int period=(rates_total-n-i)<cp ? (rates_total-n-i) : cp;
-      if(period>0)
-         AmplitudeMA[i] = average(Amplitude,i,period);
+      int period=(rates_total-1-i)<cp ? (rates_total-1-i) : cp;
+      if(period==0) period++;
+      AmplitudeMA[i] = average(Amplitude,i,period);
    }
    
 //--- return value of prev_calculated for next call
