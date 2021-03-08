@@ -13,25 +13,26 @@
 #property indicator_color2 Magenta
 
 //---- input parameters
+extern int       Range=6;
+extern int       Shift=0;
+extern double    InpAlpha=0.07;
 extern double    ATRMultipl=3;
-extern double    InpAlpha=0.07; // alpha
 //---- buffers
 double ExtMapBuffer1[];
 double ExtMapBuffer2[];
 double ExtMapBuffer3[];
 double ExtMapBuffer4[];
 double direction[];
-double ATRvalue;
+double ATRvalue[];
 double CPeriod;
-double Amplitude;
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |
 //+------------------------------------------------------------------+
 int init()
-  {
+{
 //---- indicators
 
-   IndicatorBuffers(5);
+   IndicatorBuffers(6);
 
    SetIndexStyle(0,DRAW_LINE);
    SetIndexBuffer(0,ExtMapBuffer3);
@@ -44,23 +45,27 @@ int init()
    SetIndexBuffer(2,ExtMapBuffer1);
    SetIndexBuffer(3,ExtMapBuffer2);
    SetIndexBuffer(4,direction);
+   SetIndexBuffer(5,ATRvalue);
+   
+   string shortnme;
+   shortnme = "("+Range+",ATR("+InpAlpha+","+DoubleToStr(ATRMultipl,2)+") ";
 
    IndicatorShortName("Chandelier Exit");//+shortnme);  
-   SetIndexLabel(0, "Chandlr ");//+shortnme);
-   SetIndexLabel(1, "Chandlr ");//+shortnme);
+   SetIndexLabel(0, "Chandlr "+shortnme);
+   SetIndexLabel(1, "Chandlr "+shortnme);
 
 //----
    return(0);
-  }
+}
 //+------------------------------------------------------------------+
 //| Custor indicator deinitialization function                       |
 //+------------------------------------------------------------------+
 int deinit()
-  {
+{
 //---- 
    
    return(0);
-  }
+}
 
 //+------------------------------------------------------------------+
 //| Custom indicator iteration function                              |
@@ -76,43 +81,37 @@ int start()
 
    for(int i=limit; i>=0; i--)
    {
-         ExtMapBuffer1[i]= EMPTY_VALUE;   ExtMapBuffer2[i]= EMPTY_VALUE;
+      ExtMapBuffer1[i]=EMPTY_VALUE;   ExtMapBuffer2[i]=EMPTY_VALUE;
 
-         CPeriod=(int)iCustom(NULL,0,"CyclePeriod",InpAlpha,0,i);
-         ATRvalue=iATR(NULL,0,CPeriod,i)*ATRMultipl;                          
-         
-         ExtMapBuffer1[i]=High[Highest(NULL,0,MODE_HIGH,CPeriod,i)] - ATRvalue;
-         ExtMapBuffer2[i]=Low[Lowest(NULL,0,MODE_LOW,CPeriod,i)]    + ATRvalue;
-         
-         ExtMapBuffer3[i]= EMPTY_VALUE;   ExtMapBuffer4[i]= EMPTY_VALUE;
+      CPeriod=iCustom(NULL,0,"CyclePeriod",InpAlpha,0,i);
+      ATRvalue[i]=iATR(NULL,0,CPeriod,i+Shift)*ATRMultipl;                          
+      
+      ExtMapBuffer1[i]=High[Highest(NULL,0,MODE_HIGH,Range,i+Shift)] - ATRvalue[i];
+      ExtMapBuffer2[i]=Low[Lowest(NULL,0,MODE_LOW,Range,i+Shift)]    + ATRvalue[i];
+      
+      ExtMapBuffer3[i]=EMPTY_VALUE;   ExtMapBuffer4[i]=EMPTY_VALUE;
 
+      direction[i]=direction[i+1];
+      if(Close[i]>ExtMapBuffer2[i+1])direction[i]=  1;
+      if(Close[i]<ExtMapBuffer1[i+1])direction[i]= -1;
 
-   direction[i] =direction[i+1];
-            
-         
-             if(Close[i]>ExtMapBuffer2[i+1])direction[i]=  1;
-             if(Close[i]<ExtMapBuffer1[i+1])direction[i]= -1;
+      if(direction[i]>0) {
+         if(ExtMapBuffer1[i]<ExtMapBuffer1[i+1]) {             
+            ExtMapBuffer1[i]=ExtMapBuffer1[i+1];
+         }
+         ExtMapBuffer3[i]=ExtMapBuffer1[i];
+         ExtMapBuffer4[i]=EMPTY_VALUE;
+      }
 
-   if (direction[i]>0)
-            {
-             if      (  ExtMapBuffer1[i]< ExtMapBuffer1[i+1])
-             
-                                          ExtMapBuffer1[i]=ExtMapBuffer1[i+1];
-                                          ExtMapBuffer3[i]=ExtMapBuffer1[i];
-                                          ExtMapBuffer4[i]=EMPTY_VALUE;   
-             }                 
-
-   if (direction[i]<0)
-            {                    
-             if      (  ExtMapBuffer2[i]>ExtMapBuffer2[i+1])
-             
-                                          ExtMapBuffer2[i]=ExtMapBuffer2[i+1];
-                                          ExtMapBuffer4[i]=ExtMapBuffer2[i];  
-                                          ExtMapBuffer3[i]=EMPTY_VALUE; 
-                                 
-            }  
-
+      if(direction[i]<0) {                    
+         if(ExtMapBuffer2[i]>ExtMapBuffer2[i+1]) {             
+            ExtMapBuffer2[i]=ExtMapBuffer2[i+1];
+         }
+         ExtMapBuffer4[i]=ExtMapBuffer2[i];  
+         ExtMapBuffer3[i]=EMPTY_VALUE;
+      }
    }
+   
    return(0);
 }
 //+------------------------------------------------------------------+
