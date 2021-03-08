@@ -10,8 +10,7 @@
 #property indicator_chart_window 
 
 //--- indicator buffers 
-double Cycle[];
-double Trigger[];
+double TVigor[];
 
 int currentbar = 0;
 int n = 1;
@@ -26,9 +25,8 @@ input double InpAlpha=0.07; // alpha
 int OnInit() 
 { 
 //--- indicator buffers mapping 
-   IndicatorBuffers(2);
-   initBuffer(Cycle, "Cycle", DRAW_LINE);
-   initBuffer(Trigger, "Trigger", DRAW_LINE); 
+   IndicatorBuffers(1);
+   initBuffer(TVigor, "TVigor", DRAW_LINE);
 //--- 
    current_chart_id=ChartID();
    return(INIT_SUCCEEDED); 
@@ -66,16 +64,15 @@ int OnCalculate(const int rates_total,
       double ATRvalue=iATR(NULL,0,14,i)*3;       
       double space = ATRvalue * 0.33;
       
-      Cycle[i]=iCustom(NULL,0,"CyberCycle",InpAlpha,0,i);
-      Trigger[i]=iCustom(NULL,0,"CyberCycle",InpAlpha,1,i);
+      TVigor[i]=iCustom(NULL,0,"TrendVigor",InpAlpha,0,i);
       
       if(currentbar++<1) continue;
       
-      if(Cycle[i]>Trigger[i] && Cycle[i+1]<Trigger[i+1]) {
+      if(TVigor[i]>1 && TVigor[i+1]<1) {
          DrawArrowUp("Up"+i,time[i],high[i]+space,Yellow);      
       }
       
-      if(Cycle[i]<Trigger[i] && Cycle[i+1]>Trigger[i+1]) {
+      if(TVigor[i]<-1 && TVigor[i+1]>-1) {
          DrawArrowDown("Down"+i,time[i],low[i]-space,Red);
       }
    }

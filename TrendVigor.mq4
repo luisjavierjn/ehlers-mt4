@@ -27,7 +27,7 @@ double i1 = 0;
 int buffers = 0;
 int drawBegin = 0;
 
-input double InpAlpha=0.07; // alpha
+extern double InpAlpha=0.07; // alpha
 
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |
