@@ -16,7 +16,7 @@
 extern int       Range=6;
 extern int       Shift=0;
 extern double    InpAlpha=0.07;
-extern double    ATRMultipl=3;
+extern double    ATRMultipl=4;
 //---- buffers
 double ExtMapBuffer1[];
 double ExtMapBuffer2[];

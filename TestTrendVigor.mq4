@@ -68,11 +68,11 @@ int OnCalculate(const int rates_total,
       
       if(currentbar++<1) continue;
       
-      if(TVigor[i]>1 && TVigor[i+1]<1) {
+      if(TVigor[i]>-1 && TVigor[i+1]<-1) {
          DrawArrowUp("Up"+i,time[i],high[i]+space,Yellow);      
       }
       
-      if(TVigor[i]<-1 && TVigor[i+1]>-1) {
+      if(TVigor[i]<1 && TVigor[i+1]>1) {
          DrawArrowDown("Down"+i,time[i],low[i]-space,Red);
       }
    }
