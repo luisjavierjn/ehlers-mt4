@@ -64,9 +64,9 @@ int OnCalculate(const int rates_total,
    }
    
    for(int i=limit;i>=0;i--) {
-      int j = iBarShift(_Symbol,PERIOD_D1,time[i]);      
-      ITrend[i]=iCustom(_Symbol,PERIOD_D1,"InstantaneousTrendline",InpAlpha,0,j);
-      Trigger[i]=iCustom(_Symbol,PERIOD_D1,"InstantaneousTrendline",InpAlpha,1,j);
+      int j = iBarShift(NULL,PERIOD_D1,time[i]);      
+      ITrend[i]=iCustom(NULL,PERIOD_D1,"InstantaneousTrendline",InpAlpha,0,j);
+      Trigger[i]=iCustom(NULL,PERIOD_D1,"InstantaneousTrendline",InpAlpha,1,j);
       
       if(currentbar++<1) continue;
 
