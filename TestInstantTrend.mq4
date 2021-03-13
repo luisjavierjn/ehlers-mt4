@@ -10,7 +10,7 @@
 #property indicator_chart_window 
 
 //--- indicator buffers 
-double Cycle[];
+double ITrend[];
 double Trigger[];
 
 int currentbar = 0;
@@ -27,7 +27,7 @@ int OnInit()
 { 
 //--- indicator buffers mapping 
    IndicatorBuffers(2);
-   initBuffer(Cycle);
+   initBuffer(ITrend);
    initBuffer(Trigger); 
 //--- 
    current_chart_id=ChartID();
@@ -66,16 +66,16 @@ int OnCalculate(const int rates_total,
       double ATRvalue=iATR(NULL,0,14,i)*3;       
       double space = ATRvalue * 0.33;
       
-      Cycle[i]=iCustom(NULL,0,"CyberCycle",InpAlpha,0,i);
-      Trigger[i]=iCustom(NULL,0,"CyberCycle",InpAlpha,1,i);
+      ITrend[i]=iCustom(NULL,0,"InstantaneousTrendline",InpAlpha,0,i);
+      Trigger[i]=iCustom(NULL,0,"InstantaneousTrendline",InpAlpha,1,i);
       
       if(currentbar++<1) continue;
       
-      if(Cycle[i]>Trigger[i] && Cycle[i+1]<Trigger[i+1]) {
+      if(Trigger[i]>ITrend[i] && Trigger[i+1]<ITrend[i+1]) {
          DrawArrowUp("Up"+i,time[i],high[i]+space,Yellow);      
       }
       
-      if(Cycle[i]<Trigger[i] && Cycle[i+1]>Trigger[i+1]) {
+      if(Trigger[i]<ITrend[i] && Trigger[i+1]>ITrend[i+1]) {
          DrawArrowDown("Down"+i,time[i],low[i]-space,Red);
       }
    }

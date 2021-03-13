@@ -26,7 +26,7 @@ int OnInit()
 { 
 //--- indicator buffers mapping 
    IndicatorBuffers(1);
-   initBuffer(TVigor, "TVigor", DRAW_LINE);
+   initBuffer(TVigor);
 //--- 
    current_chart_id=ChartID();
    return(INIT_SUCCEEDED); 

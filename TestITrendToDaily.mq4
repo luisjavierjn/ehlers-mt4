@@ -10,7 +10,7 @@
 #property indicator_chart_window 
 
 //--- indicator buffers 
-double Cycle[];
+double ITrend[];
 double Trigger[];
 
 int currentbar = 0;
@@ -18,6 +18,7 @@ int n = 1;
 int buffers = 0;
 int drawBegin = 0;
 long current_chart_id;
+string dt;
 
 input double InpAlpha=0.07; // alpha
 //+------------------------------------------------------------------+ 
@@ -27,7 +28,7 @@ int OnInit()
 { 
 //--- indicator buffers mapping 
    IndicatorBuffers(2);
-   initBuffer(Cycle);
+   initBuffer(ITrend);
    initBuffer(Trigger); 
 //--- 
    current_chart_id=ChartID();
@@ -63,20 +64,21 @@ int OnCalculate(const int rates_total,
    }
    
    for(int i=limit;i>=0;i--) {
-      double ATRvalue=iATR(NULL,0,14,i)*3;       
-      double space = ATRvalue * 0.33;
-      
-      Cycle[i]=iCustom(NULL,0,"CyberCycle",InpAlpha,0,i);
-      Trigger[i]=iCustom(NULL,0,"CyberCycle",InpAlpha,1,i);
+      int j = iBarShift(_Symbol,PERIOD_D1,time[i]);      
+      ITrend[i]=iCustom(_Symbol,PERIOD_D1,"InstantaneousTrendline",InpAlpha,0,j);
+      Trigger[i]=iCustom(_Symbol,PERIOD_D1,"InstantaneousTrendline",InpAlpha,1,j);
       
       if(currentbar++<1) continue;
+
+      dt = TimeToStr(Time[i], TIME_DATE|TIME_SECONDS);
+      dt = StringSubstr(dt,0,4) + "-" + StringSubstr(dt,5,2) + "-" + StringSubstr(dt,8,2) + "T" + StringSubstr(dt,11);         
       
-      if(Cycle[i]>Trigger[i] && Cycle[i+1]<Trigger[i+1]) {
-         DrawArrowUp("Up"+i,time[i],high[i]+space,Yellow);      
+      if(Trigger[i]>ITrend[i] && Trigger[i+1]<ITrend[i+1]) {
+         Print(dt + " -> Up");
       }
       
-      if(Cycle[i]<Trigger[i] && Cycle[i+1]>Trigger[i+1]) {
-         DrawArrowDown("Down"+i,time[i],low[i]-space,Red);
+      if(Trigger[i]<ITrend[i] && Trigger[i+1]>ITrend[i+1]) {
+         Print(dt + " -> Down");
       }
    }
    
@@ -93,22 +95,4 @@ void initBuffer(double &array[], string label = "", int type = DRAW_NONE, int ar
     SetIndexStyle(buffers, type, style, width);
     SetIndexArrow(buffers, arrow);
     buffers++;
-}
-
-void DrawArrowUp(string ArrowName,double LineTime,double LinePrice,color LineColor)
-{
-   ObjectCreate(current_chart_id,ArrowName, OBJ_ARROW, 0, LineTime, LinePrice);
-   ObjectSet(ArrowName, OBJPROP_STYLE, STYLE_SOLID);
-   ObjectSet(ArrowName, OBJPROP_ARROWCODE, SYMBOL_ARROWUP);
-   ObjectSet(ArrowName, OBJPROP_COLOR, LineColor);
-   ChartRedraw(current_chart_id); 
-}
-
-void DrawArrowDown(string ArrowName,double LineTime,double LinePrice,color LineColor)
-{
-   ObjectCreate(ArrowName, OBJ_ARROW, 0, LineTime, LinePrice);
-   ObjectSet(ArrowName, OBJPROP_STYLE, STYLE_SOLID);
-   ObjectSet(ArrowName, OBJPROP_ARROWCODE, SYMBOL_ARROWDOWN);
-   ObjectSet(ArrowName, OBJPROP_COLOR, LineColor);
-   ChartRedraw(current_chart_id); 
 }
