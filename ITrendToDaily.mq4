@@ -1,24 +1,27 @@
 //+------------------------------------------------------------------+
-//|                                                   CyberCycle.mq4 |
-//|                                     Copyright 2021, luisjavierjn |
-//|                                               https://caudas.com |
+//|                                                ITrendToDaily.mq4 |
+//|                        Copyright 2020, MetaQuotes Software Corp. |
+//|                                             https://www.mql5.com |
 //+------------------------------------------------------------------+
-#property copyright   "Copyright 2021, luisjavierjn"
-#property link        "https://caudas.com"
-#property version     "1.00"
-#property description "Painting Arrows"
-#property indicator_chart_window 
-
-//--- indicator buffers 
-double LineBuffer[];
+#property copyright "Copyright 2020, MetaQuotes Software Corp."
+#property link      "https://www.mql5.com"
+#property version   "1.00"
+#property strict
+#property indicator_separate_window
+#property indicator_buffers 1 
+#property indicator_color1  Yellow
+#property indicator_minimum -1.5
+#property indicator_maximum 1.5
 
 int currentbar = 0;
-int n = 1;
+int n = 0;
 int buffers = 0;
 int drawBegin = 0;
-string dt;
 
 input double InpAlpha=0.07; // alpha
+
+//--- indicator buffers 
+double LineBuffer[]; 
 //+------------------------------------------------------------------+ 
 //| Custom indicator initialization function                         | 
 //+------------------------------------------------------------------+ 
@@ -26,7 +29,7 @@ int OnInit()
 { 
 //--- indicator buffers mapping 
    IndicatorBuffers(1);
-   initBuffer(LineBuffer);
+   initBuffer(LineBuffer, "Line", DRAW_LINE);
 //--- 
    return(INIT_SUCCEEDED); 
 } 
@@ -44,6 +47,8 @@ int OnCalculate(const int rates_total,
                 const long& volume[], 
                 const int& spread[]) 
 { 
+   double ITrend, Trigger;
+   //--- last counted bar will be recounted
    int limit=rates_total-prev_calculated; // start index for calculations
    if(prev_calculated>0) limit++;
    
@@ -61,21 +66,21 @@ int OnCalculate(const int rates_total,
    
    for(int i=limit;i>=0;i--) {
       int j = iBarShift(NULL,PERIOD_D1,time[i]);      
-      LineBuffer[i]=iCustom(NULL,PERIOD_D1,"ITrendToDaily",InpAlpha,0,j);      
+      ITrend=iCustom(NULL,PERIOD_D1,"InstantaneousTrendline",InpAlpha,0,j);
+      Trigger=iCustom(NULL,PERIOD_D1,"InstantaneousTrendline",InpAlpha,1,j);
       
       if(currentbar++<1) continue;
 
-      dt = TimeToStr(Time[i], TIME_DATE|TIME_SECONDS);
-      dt = StringSubstr(dt,0,4) + "-" + StringSubstr(dt,5,2) + "-" + StringSubstr(dt,8,2) + "T" + StringSubstr(dt,11);         
+      LineBuffer[i]=LineBuffer[i+1];
       
-      if(LineBuffer[i]>LineBuffer[i+1]) {
-         Print(dt + " -> Up");
+      if(Trigger>ITrend) {
+         LineBuffer[i]=1;
       }
       
-      if(LineBuffer[i]<LineBuffer[i+1]) {
-         Print(dt + " -> Down");
+      if(Trigger<ITrend) {
+         LineBuffer[i]=-1;
       }
-   }
+   }   
    
    return(rates_total);
 }
