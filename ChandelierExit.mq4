@@ -13,10 +13,11 @@
 #property indicator_color2 Magenta
 
 //---- input parameters
-extern int       Range=6;
-extern int       Shift=0;
-extern double    InpAlpha=0.07;
-extern double    ATRMultipl=4;
+extern int     Range=6;
+extern int     Shift=0;
+extern double  InpAlpha=0.07;
+extern double  CycPart = 0.5;  
+extern double  ATRMultipl=3;
 //---- buffers
 double ExtMapBuffer1[];
 double ExtMapBuffer2[];
@@ -84,7 +85,7 @@ int start()
       ExtMapBuffer1[i]=EMPTY_VALUE;   ExtMapBuffer2[i]=EMPTY_VALUE;
 
       CPeriod=iCustom(NULL,0,"CyclePeriod",InpAlpha,0,i);
-      ATRvalue[i]=iATR(NULL,0,CPeriod,i+Shift)*ATRMultipl;                          
+      ATRvalue[i]=iATR(NULL,0,CPeriod*CycPart,i+Shift)*ATRMultipl;                          
       
       ExtMapBuffer1[i]=High[Highest(NULL,0,MODE_HIGH,Range,i+Shift)] - ATRvalue[i];
       ExtMapBuffer2[i]=Low[Lowest(NULL,0,MODE_LOW,Range,i+Shift)]    + ATRvalue[i];
