@@ -73,7 +73,7 @@ int OnCalculate(const int rates_total,
       PriceB=iCustom(NULL,0,"InstantaneousTrendline",InpAlpha,0,i+CPeriod);
       Slope = PriceA-PriceB;
       
-      TVigor[i]=MathMax(MathMin(Slope/(2*Amplitude),2),-2);
+      TVigor[i]=MathMax(MathMin(Slope/Amplitude,2),-2);
       Sup[i]=1; Inf[i]=-1;
    }
    
