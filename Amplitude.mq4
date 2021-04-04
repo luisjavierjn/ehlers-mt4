@@ -16,7 +16,7 @@
 #property indicator_color2  Blue
 
 double Amplitude[];
-double AmplitudeMA[];
+double ATR[];
 
 int cp = 0;
 double q1 = 0;
@@ -26,7 +26,7 @@ int buffers = 0;
 int drawBegin = 0;
 
 input double InpAlpha=0.07; // alpha
-input bool ShowMA = true;
+input bool ShowATR = true;
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |
 //+------------------------------------------------------------------+
@@ -34,10 +34,10 @@ int OnInit() {
 //--- indicator buffers mapping
    IndicatorBuffers(2);
    initBuffer(Amplitude, "Amplitude", DRAW_LINE);
-   if(ShowMA)
-      initBuffer(AmplitudeMA, "AmplitudeMA", DRAW_LINE);
+   if(ShowATR)
+      initBuffer(ATR, "ATR", DRAW_LINE);
    else
-      initBuffer(AmplitudeMA);
+      initBuffer(ATR);
 
 //--- return value
    return(INIT_SUCCEEDED);
@@ -68,7 +68,8 @@ int OnCalculate(const int rates_total,
       Amplitude[i] = MathSqrt(MathPow(q1,2)+MathPow(i1,2));
       int period=(rates_total-1-i)<cp ? (rates_total-1-i) : cp;
       if(period==0) period++;
-      AmplitudeMA[i] = average(Amplitude,i,period);
+      //AmplitudeMA[i] = average(Amplitude,i,period);
+      ATR[i] = iATR(NULL,0,period/2,i);
    }
    
 //--- return value of prev_calculated for next call
