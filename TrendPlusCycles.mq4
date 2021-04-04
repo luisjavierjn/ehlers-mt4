@@ -25,6 +25,7 @@ int buffers = 0;
 int drawBegin = 0;
 
 input double InpAlpha=0.07; // alpha
+input bool ShowITrend = true;
 
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |
@@ -33,7 +34,10 @@ int OnInit() {
 //--- indicator buffers mapping 
    IndicatorBuffers(2);
    initBuffer(Smooth, "Smooth", DRAW_LINE);
-   initBuffer(ITrend, "ITrend", DRAW_LINE);   
+   if(ShowITrend)
+      initBuffer(ITrend, "ITrend", DRAW_LINE);   
+   else
+      initBuffer(ITrend);   
 
 //--- return value
    return(INIT_SUCCEEDED);

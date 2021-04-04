@@ -106,7 +106,7 @@ void DrawArrowUp(string ArrowName,double LineTime,double LinePrice,color LineCol
 
 void DrawArrowDown(string ArrowName,double LineTime,double LinePrice,color LineColor)
 {
-   ObjectCreate(ArrowName, OBJ_ARROW, 0, LineTime, LinePrice);
+   ObjectCreate(current_chart_id,ArrowName, OBJ_ARROW, 0, LineTime, LinePrice);
    ObjectSet(ArrowName, OBJPROP_STYLE, STYLE_SOLID);
    ObjectSet(ArrowName, OBJPROP_ARROWCODE, SYMBOL_ARROWDOWN);
    ObjectSet(ArrowName, OBJPROP_COLOR, LineColor);

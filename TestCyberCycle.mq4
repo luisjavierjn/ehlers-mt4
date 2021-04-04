@@ -63,8 +63,7 @@ int OnCalculate(const int rates_total,
    }
    
    for(int i=limit;i>=0;i--) {
-      double ATRvalue=iATR(NULL,0,14,i)*3;       
-      double space = ATRvalue * 0.33;
+      double ATRvalue=iATR(NULL,0,14,i);       
       
       Cycle[i]=iCustom(NULL,0,"CyberCycle",InpAlpha,0,i);
       Trigger[i]=iCustom(NULL,0,"CyberCycle",InpAlpha,1,i);
@@ -72,11 +71,11 @@ int OnCalculate(const int rates_total,
       if(currentbar++<1) continue;
       
       if(Cycle[i]>Trigger[i] && Cycle[i+1]<Trigger[i+1]) {
-         DrawArrowUp("Up"+i,time[i],high[i]+space,Yellow);      
+         DrawArrowUp("Up"+i,time[i],high[i]+ATRvalue,Yellow);      
       }
       
       if(Cycle[i]<Trigger[i] && Cycle[i+1]>Trigger[i+1]) {
-         DrawArrowDown("Down"+i,time[i],low[i]-space,Red);
+         DrawArrowDown("Down"+i,time[i],low[i]-ATRvalue,Red);
       }
    }
    
@@ -106,7 +105,7 @@ void DrawArrowUp(string ArrowName,double LineTime,double LinePrice,color LineCol
 
 void DrawArrowDown(string ArrowName,double LineTime,double LinePrice,color LineColor)
 {
-   ObjectCreate(ArrowName, OBJ_ARROW, 0, LineTime, LinePrice);
+   ObjectCreate(current_chart_id,ArrowName, OBJ_ARROW, 0, LineTime, LinePrice);
    ObjectSet(ArrowName, OBJPROP_STYLE, STYLE_SOLID);
    ObjectSet(ArrowName, OBJPROP_ARROWCODE, SYMBOL_ARROWDOWN);
    ObjectSet(ArrowName, OBJPROP_COLOR, LineColor);

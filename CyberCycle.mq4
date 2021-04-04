@@ -27,6 +27,7 @@ int buffers = 0;
 int drawBegin = 0;
 
 input double InpAlpha=0.07; // alpha
+input bool ShowTrigger = true;
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |
 //+------------------------------------------------------------------+
@@ -34,7 +35,10 @@ int OnInit() {
 //--- indicator buffers mapping 
    IndicatorBuffers(3);
    initBuffer(Cycle, "Cycle", DRAW_LINE);
-   initBuffer(Trigger, "Trigger", DRAW_LINE);
+   if(ShowTrigger)
+      initBuffer(Trigger, "Trigger", DRAW_LINE);
+   else
+      initBuffer(Trigger);
    initBuffer(Smooth);   
 
 //--- return value

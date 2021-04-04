@@ -26,15 +26,18 @@ int buffers = 0;
 int drawBegin = 0;
 
 input double InpAlpha=0.07; // alpha
-
+input bool ShowMA = true;
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |
 //+------------------------------------------------------------------+
 int OnInit() {
 //--- indicator buffers mapping
    IndicatorBuffers(2);
-   initBuffer(AmplitudeMA, "AmplitudeMA", DRAW_LINE);   
-   initBuffer(Amplitude, "Amplitude", DRAW_LINE);   
+   initBuffer(Amplitude, "Amplitude", DRAW_LINE);
+   if(ShowMA)
+      initBuffer(AmplitudeMA, "AmplitudeMA", DRAW_LINE);
+   else
+      initBuffer(AmplitudeMA);
 
 //--- return value
    return(INIT_SUCCEEDED);
