@@ -11,12 +11,13 @@
 #property description "Amplitude indicator - described by John F. Ehlers"
 
 #property indicator_separate_window
-#property indicator_buffers 2
+#property indicator_buffers 3
 #property indicator_color1  Red
 #property indicator_color2  Blue
 
-double Amplitude[];
+double AmplitudeMA[];
 double Frontier[];
+double Amplitude[];
 
 int cp = 0;
 double q1 = 0;
@@ -31,9 +32,10 @@ input double InpAlpha=0.07; // alpha
 //+------------------------------------------------------------------+
 int OnInit() {
 //--- indicator buffers mapping
-   IndicatorBuffers(2);
-   initBuffer(Amplitude, "Amplitude", DRAW_LINE);
+   IndicatorBuffers(3);
+   initBuffer(AmplitudeMA, "AmplitudeMA", DRAW_LINE);
    initBuffer(Frontier, "Frontier", DRAW_LINE);
+   initBuffer(Amplitude);
 
 //--- return value
    return(INIT_SUCCEEDED);
@@ -53,7 +55,6 @@ int OnCalculate(const int rates_total,
                 const long &volume[],
                 const int &spread[]) {
 //---
-   double BidAsk = Ask-Bid;
    //--- last counted bar will be recounted
    int limit=rates_total-prev_calculated; // start index for calculations
    if(prev_calculated>0) limit++;
@@ -63,10 +64,11 @@ int OnCalculate(const int rates_total,
       q1=iCustom(NULL,0,"CyclePeriod",InpAlpha,4,i);
       i1=iCustom(NULL,0,"CyclePeriod",InpAlpha,5,i);         
       int period=(rates_total-1-i)<cp ? (rates_total-1-i) : cp;
-      if(period==0) period++;      
-      Amplitude[i] = (MathSqrt(MathPow(q1,2)+MathPow(i1,2))-iATR(NULL,0,period/2,i))/BidAsk;
-      Frontier[i] = 1;
-      //AmplitudeMA[i] = average(Amplitude,i,period);      
+      int half_period=0.5*period;
+      if(half_period==0) half_period++;      
+      Amplitude[i]=MathSqrt(MathPow(q1,2)+MathPow(i1,2));
+      AmplitudeMA[i]=(iMAOnArray(Amplitude,0,half_period,0,MODE_SMA,i)-iATR(NULL,0,half_period,i));
+      Frontier[i]=Ask-Bid;
    }
    
 //--- return value of prev_calculated for next call
@@ -84,12 +86,4 @@ void initBuffer(double &array[], string label = "", int type = DRAW_NONE, int ar
     SetIndexStyle(buffers, type, style, width);
     SetIndexArrow(buffers, arrow);
     buffers++;
-}
-
-double average(double& arr[], int idx, double len) {
-   ArraySetAsSeries(arr, true);
-   double ArraySum = 0;
-   for(int ArrayIndex = idx; ArrayIndex < (idx+len); ArrayIndex++)
-      ArraySum += arr[ArrayIndex];
-   return (ArraySum/len); 
 }
