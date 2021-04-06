@@ -62,18 +62,17 @@ int OnCalculate(const int rates_total,
    
    for(int i=limit;i>=0;i--) {
       double ATRvalue=iATR(NULL,0,14,i)*3;       
-      double space = ATRvalue * 0.33;
       
       TVigor[i]=iCustom(NULL,0,"TrendVigor",InpAlpha,0,i);
       
       if(currentbar++<1) continue;
       
-      if(TVigor[i]>-1 && TVigor[i+1]<-1) {
-         DrawArrowUp("Up"+i,time[i],high[i]+space,Yellow);      
+      if(TVigor[i]<-1 && TVigor[i+1]>=-1) {
+         DrawArrowDown("Down"+i,time[i],low[i]-ATRvalue,Red);
       }
       
-      if(TVigor[i]<1 && TVigor[i+1]>1) {
-         DrawArrowDown("Down"+i,time[i],low[i]-space,Red);
+      if(TVigor[i]>1 && TVigor[i+1]<=1) {
+         DrawArrowUp("Up"+i,time[i],high[i]+ATRvalue,Yellow);
       }
    }
    
