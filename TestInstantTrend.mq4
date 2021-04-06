@@ -63,8 +63,7 @@ int OnCalculate(const int rates_total,
    }
    
    for(int i=limit;i>=0;i--) {
-      double ATRvalue=iATR(NULL,0,14,i)*3;       
-      double space = ATRvalue * 0.33;
+      double ATRvalue=iATR(NULL,0,14,i);       
       
       ITrend[i]=iCustom(NULL,0,"InstantaneousTrendline",InpAlpha,0,i);
       Trigger[i]=iCustom(NULL,0,"InstantaneousTrendline",InpAlpha,1,i);
@@ -72,11 +71,11 @@ int OnCalculate(const int rates_total,
       if(currentbar++<1) continue;
       
       if(Trigger[i]>ITrend[i] && Trigger[i+1]<ITrend[i+1]) {
-         DrawArrowUp("Up"+i,time[i],high[i]+space,Yellow);      
+         DrawArrowUp("Up"+i,time[i],high[i]+ATRvalue,Yellow);      
       }
       
       if(Trigger[i]<ITrend[i] && Trigger[i+1]>ITrend[i+1]) {
-         DrawArrowDown("Down"+i,time[i],low[i]-space,Red);
+         DrawArrowDown("Down"+i,time[i],low[i]-ATRvalue,Red);
       }
    }
    
