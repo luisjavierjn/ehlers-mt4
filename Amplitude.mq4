@@ -22,7 +22,7 @@ double Amplitude[];
 int cp = 0;
 double q1 = 0;
 double i1 = 0;
-int n = 1;
+int n = 62;
 int buffers = 0;
 int drawBegin = 0;
 
@@ -59,6 +59,14 @@ int OnCalculate(const int rates_total,
    int limit=rates_total-prev_calculated; // start index for calculations
    if(prev_calculated>0) limit++;
    
+   if(limit>rates_total-n) // adjust for last bars
+      limit=rates_total-n;
+   else limit--;        
+
+   if(limit>=0) {
+      ArraySetAsSeries(close,true);
+   }   
+   
    for(int i=limit-1;i>=0;i--) {
       cp=(int)iCustom(NULL,0,"CyclePeriod",InpAlpha,0,i);
       q1=iCustom(NULL,0,"CyclePeriod",InpAlpha,4,i);
@@ -67,8 +75,9 @@ int OnCalculate(const int rates_total,
       int half_period=0.5*period;
       if(half_period==0) half_period++;      
       Amplitude[i]=MathSqrt(MathPow(q1,2)+MathPow(i1,2));
-      AmplitudeMA[i]=(iMAOnArray(Amplitude,0,half_period,0,MODE_SMA,i)-iATR(NULL,0,half_period,i));
-      Frontier[i]=Ask-Bid;
+      double MovAvgClose=iMA(NULL,0,half_period,0,MODE_SMA,PRICE_CLOSE,i);
+      AmplitudeMA[i]=100*(iMAOnArray(Amplitude,0,half_period,0,MODE_SMA,i)-iATR(NULL,0,half_period,i))/MovAvgClose;
+      Frontier[i]=100*(Ask-Bid)/MovAvgClose;
    }
    
 //--- return value of prev_calculated for next call
