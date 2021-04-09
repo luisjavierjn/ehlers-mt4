@@ -15,7 +15,7 @@
 #property indicator_color1  Red
 #property indicator_color2  Blue
 
-double AmplitudeMA[];
+double CustomSharpeRatio[];
 double Frontier[];
 double Amplitude[];
 
@@ -33,7 +33,7 @@ input double InpAlpha=0.07; // alpha
 int OnInit() {
 //--- indicator buffers mapping
    IndicatorBuffers(3);
-   initBuffer(AmplitudeMA, "AmplitudeMA", DRAW_LINE);
+   initBuffer(CustomSharpeRatio, "CustomSharpeRatio", DRAW_LINE);
    initBuffer(Frontier, "Frontier", DRAW_LINE);
    initBuffer(Amplitude);
 
@@ -75,9 +75,10 @@ int OnCalculate(const int rates_total,
       int half_period=0.5*period;
       if(half_period==0) half_period++;      
       Amplitude[i]=MathSqrt(MathPow(q1,2)+MathPow(i1,2));
-      double MovAvgClose=iMA(NULL,0,half_period,0,MODE_SMA,PRICE_CLOSE,i);
-      AmplitudeMA[i]=100*(iMAOnArray(Amplitude,0,half_period,0,MODE_SMA,i)-iATR(NULL,0,half_period,i))/MovAvgClose;
-      Frontier[i]=100*(Ask-Bid)/MovAvgClose;
+      double R=iMAOnArray(Amplitude,0,half_period,0,MODE_SMA,i);
+      double Spread=Ask-Bid;
+      CustomSharpeRatio[i]=(R-Spread)/iATR(NULL,0,half_period,i);
+      Frontier[i]=1;
    }
    
 //--- return value of prev_calculated for next call
