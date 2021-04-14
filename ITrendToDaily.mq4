@@ -47,7 +47,7 @@ int OnCalculate(const int rates_total,
                 const long& volume[], 
                 const int& spread[]) 
 { 
-   double ITrend, Trigger;
+   double ITrend, ITrigger, CCycle, CTrigger;
    //--- last counted bar will be recounted
    int limit=rates_total-prev_calculated; // start index for calculations
    if(prev_calculated>0) limit++;
@@ -65,20 +65,30 @@ int OnCalculate(const int rates_total,
    }
    
    for(int i=limit;i>=0;i--) {
-      int j = iBarShift(NULL,PERIOD_D1,time[i]);      
+      int j = iBarShift(NULL,PERIOD_D1,time[i]);
+      
       ITrend=iCustom(NULL,PERIOD_D1,"InstantaneousTrendline",InpAlpha,0,j);
-      Trigger=iCustom(NULL,PERIOD_D1,"InstantaneousTrendline",InpAlpha,1,j);
+      ITrigger=iCustom(NULL,PERIOD_D1,"InstantaneousTrendline",InpAlpha,1,j);
+      
+      CCycle=iCustom(NULL,PERIOD_D1,"CyberCycle",InpAlpha,0,j);
+      CTrigger=iCustom(NULL,PERIOD_D1,"CyberCycle",InpAlpha,1,j);      
       
       if(currentbar++<1) continue;
 
       LineBuffer[i]=LineBuffer[i+1];
       
-      if(Trigger>ITrend) {
-         LineBuffer[i]=1;
+      if(ITrigger>ITrend) {
+         if(CCycle>CTrigger)
+            LineBuffer[i]=1;
+         else
+            LineBuffer[i]=-0.5;
       }
       
-      if(Trigger<ITrend) {
-         LineBuffer[i]=-1;
+      if(ITrigger<ITrend) {
+         if(CCycle<CTrigger)
+            LineBuffer[i]=-1;
+         else
+            LineBuffer[i]=0.5;
       }
    }   
    
