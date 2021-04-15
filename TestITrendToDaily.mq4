@@ -16,6 +16,7 @@ int currentbar = 0;
 int n = 1;
 int buffers = 0;
 int drawBegin = 0;
+long current_chart_id;
 string dt;
 
 input double InpAlpha=0.07; // alpha
@@ -28,6 +29,7 @@ int OnInit()
    IndicatorBuffers(1);
    initBuffer(LineBuffer);
 //--- 
+   current_chart_id=ChartID();
    return(INIT_SUCCEEDED); 
 } 
 //+------------------------------------------------------------------+ 
@@ -60,6 +62,8 @@ int OnCalculate(const int rates_total,
    }
    
    for(int i=limit;i>=0;i--) {
+      double ATRvalue=iATR(NULL,0,14,i);
+      
       int j = iBarShift(NULL,PERIOD_D1,time[i]);      
       LineBuffer[i]=iCustom(NULL,PERIOD_D1,"ITrendToDaily",InpAlpha,0,j);      
       
@@ -70,10 +74,12 @@ int OnCalculate(const int rates_total,
       
       if(LineBuffer[i]>LineBuffer[i+1]) {
          Print(dt + " -> Up");
+         DrawArrowUp("Up"+i,time[i],high[i]+ATRvalue,Yellow); 
       }
       
       if(LineBuffer[i]<LineBuffer[i+1]) {
          Print(dt + " -> Down");
+         DrawArrowDown("Down"+i,time[i],low[i]-ATRvalue,Red);
       }
    }
    
@@ -90,4 +96,22 @@ void initBuffer(double &array[], string label = "", int type = DRAW_NONE, int ar
     SetIndexStyle(buffers, type, style, width);
     SetIndexArrow(buffers, arrow);
     buffers++;
+}
+
+void DrawArrowUp(string ArrowName,double LineTime,double LinePrice,color LineColor)
+{
+   ObjectCreate(current_chart_id,ArrowName, OBJ_ARROW, 0, LineTime, LinePrice);
+   ObjectSet(ArrowName, OBJPROP_STYLE, STYLE_SOLID);
+   ObjectSet(ArrowName, OBJPROP_ARROWCODE, SYMBOL_ARROWUP);
+   ObjectSet(ArrowName, OBJPROP_COLOR, LineColor);
+   ChartRedraw(current_chart_id); 
+}
+
+void DrawArrowDown(string ArrowName,double LineTime,double LinePrice,color LineColor)
+{
+   ObjectCreate(current_chart_id,ArrowName, OBJ_ARROW, 0, LineTime, LinePrice);
+   ObjectSet(ArrowName, OBJPROP_STYLE, STYLE_SOLID);
+   ObjectSet(ArrowName, OBJPROP_ARROWCODE, SYMBOL_ARROWDOWN);
+   ObjectSet(ArrowName, OBJPROP_COLOR, LineColor);
+   ChartRedraw(current_chart_id); 
 }
