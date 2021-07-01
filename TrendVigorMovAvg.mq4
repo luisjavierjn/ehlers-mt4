@@ -28,6 +28,7 @@ int buffers = 0;
 int drawBegin = 0;
 
 extern double InpAlpha=0.07; // alpha
+extern double TrendPeriod=62; // alpha
 
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |
@@ -68,10 +69,10 @@ int OnCalculate(const int rates_total,
       i1=iCustom(NULL,0,"CyclePeriod",InpAlpha,5,i);
       
       Amplitude = MathSqrt(MathPow(q1,2)+MathPow(i1,2));
-      PriceA=iMA(NULL,0,62,0,MODE_SMA,PRICE_TYPICAL,i);
+      PriceA=iMA(NULL,0,TrendPeriod,0,MODE_SMA,PRICE_TYPICAL,i);
       //PriceA=iCustom(NULL,0,"InstantaneousTrendline",InpAlpha,0,i);
       CPeriod=(rates_total-1-i)<cp ? (rates_total-1-i) : cp;
-      PriceB=iMA(NULL,0,62,0,MODE_SMA,PRICE_TYPICAL,i+CPeriod);
+      PriceB=iMA(NULL,0,TrendPeriod,0,MODE_SMA,PRICE_TYPICAL,i+CPeriod);
       //PriceB=iCustom(NULL,0,"InstantaneousTrendline",InpAlpha,0,i+CPeriod);
       Slope = PriceA-PriceB;
       
